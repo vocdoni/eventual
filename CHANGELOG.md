@@ -1,3 +1,8 @@
+## [0.9.2]
+
+* Accepting fresshness timeout's as a `Duration()`
+* Improving the README.md
+
 ## [0.9.1]
 
 * Better README.md

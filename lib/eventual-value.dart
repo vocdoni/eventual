@@ -36,16 +36,9 @@ class EventualValue<T> {
   /// By default `isFresh` returns `false` 10 seconds after the value is set.
   /// Alter the recency threshold with a new value.
   /// Returns itself so further methods can be chained right after.
-  EventualValue<T> withFreshness({int seconds, int milliseconds}) {
-    if (seconds is int) {
-      assert(seconds > 0, "The amount of seconds must be positive");
-      this._valueFreshnessTimeout = seconds * 1000;
-    } else if (milliseconds is int) {
-      assert(milliseconds > 0, "The amount of milliseconds must be positive");
-      this._valueFreshnessTimeout = milliseconds;
-    } else {
-      assert(false, "Either seconds or milliseconds must be defined");
-    }
+  EventualValue<T> withFreshnessTimeout(Duration duration) {
+    assert(!duration.isNegative, "The duration must be positive");
+    this._valueFreshnessTimeout = duration.inMilliseconds;
 
     return this;
   }
@@ -53,16 +46,9 @@ class EventualValue<T> {
   /// By default `isLoadingFresh` returns `true` 10 seconds after `loading` is set to `true`.
   /// This method alters the timeout threshold with a new value.
   /// Returns itself so further methods can be chained right after.
-  EventualValue<T> withLoadingTimeout({int seconds, int milliseconds}) {
-    if (seconds is int) {
-      assert(seconds > 0, "The amount of seconds must be positive");
-      this._loadingFreshnessTimeout = seconds * 1000;
-    } else if (milliseconds is int) {
-      assert(milliseconds > 0, "The amount of milliseconds must be positive");
-      this._loadingFreshnessTimeout = milliseconds;
-    } else {
-      assert(false, "Either seconds or milliseconds must be defined");
-    }
+  EventualValue<T> withLoadingTimeout(Duration duration) {
+    assert(!duration.isNegative, "The duration must be positive");
+    this._loadingFreshnessTimeout = duration.inMilliseconds;
 
     return this;
   }

@@ -328,7 +328,8 @@ void testEventualValue() {
   });
 
   test('handle the freshness of the main value', () async {
-    final val = EventualValue<int>().withFreshness(milliseconds: 50);
+    final val =
+        EventualValue<int>().withFreshnessTimeout(Duration(milliseconds: 50));
     val.value = 1234;
     expect(val.value, 1234);
     expect(val.hasValue, true);
@@ -356,7 +357,8 @@ void testEventualValue() {
   });
 
   test('handle the age of the loading status', () async {
-    final val = EventualValue<int>().withLoadingTimeout(milliseconds: 50);
+    final val =
+        EventualValue<int>().withLoadingTimeout(Duration(milliseconds: 50));
     val.loadingMessage = "Please, wait 50ms";
     expect(val.value, null);
     expect(val.hasValue, false);
@@ -382,7 +384,8 @@ void testEventualValue() {
     expect(val.lastError, null);
     expect(val.isFresh, false);
 
-    final val2 = EventualValue<int>().withLoadingTimeout(milliseconds: 50);
+    final val2 =
+        EventualValue<int>().withLoadingTimeout(Duration(milliseconds: 50));
     val2.value = 1234;
     val2.loadingMessage = "Please, wait 50ms more";
     expect(val2.value, 1234);
@@ -412,24 +415,24 @@ void testEventualValue() {
 
   test('modifiers', () async {
     final val1 = EventualValue<int>();
-    expect(val1, val1.withLoadingTimeout(milliseconds: 50));
+    expect(val1, val1.withLoadingTimeout(Duration(milliseconds: 50)));
 
     final val2 = EventualValue<int>();
-    expect(val2, val2.withFreshness(milliseconds: 50));
+    expect(val2, val2.withFreshnessTimeout(Duration(milliseconds: 50)));
 
     final val3 = EventualValue<int>();
     expect(
         val3,
         val3
-            .withLoadingTimeout(milliseconds: 50)
-            .withFreshness(milliseconds: 50));
+            .withLoadingTimeout(Duration(milliseconds: 50))
+            .withFreshnessTimeout(Duration(milliseconds: 50)));
 
     final val4 = EventualValue<int>();
     expect(
         val4,
         val4
-            .withFreshness(milliseconds: 50)
-            .withLoadingTimeout(milliseconds: 50));
+            .withFreshnessTimeout(Duration(milliseconds: 50))
+            .withLoadingTimeout(Duration(milliseconds: 50)));
 
     final val5 = EventualValue<int>();
     expect(val5, val5.setValue(1234));
@@ -444,8 +447,8 @@ void testEventualValue() {
     expect(
         val8,
         val8
-            .withFreshness(milliseconds: 50)
-            .withLoadingTimeout(milliseconds: 50)
+            .withFreshnessTimeout(Duration(milliseconds: 50))
+            .withLoadingTimeout(Duration(milliseconds: 50))
             .setToLoading()
             .setError("Fail")
             .setValue(1234));
@@ -771,7 +774,8 @@ void testEventualNotifier() {
   });
 
   test('handle the freshness of the main value', () async {
-    final val = EventualNotifier<int>().withFreshness(milliseconds: 50);
+    final val = EventualNotifier<int>()
+        .withFreshnessTimeout(Duration(milliseconds: 50));
     val.value = 1234;
     expect(val.value, 1234);
     expect(val.hasValue, true);
@@ -799,7 +803,8 @@ void testEventualNotifier() {
   });
 
   test('handle the age of the loading status', () async {
-    final val = EventualNotifier<int>().withLoadingTimeout(milliseconds: 50);
+    final val =
+        EventualNotifier<int>().withLoadingTimeout(Duration(milliseconds: 50));
     val.loadingMessage = "Please, wait 50ms";
     expect(val.value, null);
     expect(val.hasValue, false);
@@ -825,7 +830,8 @@ void testEventualNotifier() {
     expect(val.lastError, null);
     expect(val.isFresh, false);
 
-    final val2 = EventualNotifier<int>().withLoadingTimeout(milliseconds: 50);
+    final val2 =
+        EventualNotifier<int>().withLoadingTimeout(Duration(milliseconds: 50));
     val2.value = 1234;
     val2.loadingMessage = "Please, wait 50ms more";
     expect(val2.value, 1234);
@@ -855,24 +861,24 @@ void testEventualNotifier() {
 
   test('modifiers', () async {
     final val1 = EventualNotifier<int>();
-    expect(val1, val1.withLoadingTimeout(milliseconds: 50));
+    expect(val1, val1.withLoadingTimeout(Duration(milliseconds: 50)));
 
     final val2 = EventualNotifier<int>();
-    expect(val2, val2.withFreshness(milliseconds: 50));
+    expect(val2, val2.withFreshnessTimeout(Duration(milliseconds: 50)));
 
     final val3 = EventualNotifier<int>();
     expect(
         val3,
         val3
-            .withLoadingTimeout(milliseconds: 50)
-            .withFreshness(milliseconds: 50));
+            .withLoadingTimeout(Duration(milliseconds: 50))
+            .withFreshnessTimeout(Duration(milliseconds: 50)));
 
     final val4 = EventualNotifier<int>();
     expect(
         val4,
         val4
-            .withFreshness(milliseconds: 50)
-            .withLoadingTimeout(milliseconds: 50));
+            .withFreshnessTimeout(Duration(milliseconds: 50))
+            .withLoadingTimeout(Duration(milliseconds: 50)));
 
     final val5 = EventualNotifier<int>();
     expect(val5, val5.setValue(1234));
@@ -887,8 +893,8 @@ void testEventualNotifier() {
     expect(
         val8,
         val8
-            .withFreshness(milliseconds: 50)
-            .withLoadingTimeout(milliseconds: 50)
+            .withFreshnessTimeout(Duration(milliseconds: 50))
+            .withLoadingTimeout(Duration(milliseconds: 50))
             .setToLoading()
             .setError("Fail")
             .setValue(1234));

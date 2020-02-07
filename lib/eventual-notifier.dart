@@ -13,8 +13,8 @@ class EventualNotifier<T> extends EventualValue<T> with ChangeNotifier {
   /// Alter the recency threshold with a new value.
   /// Returns itself so further methods can be chained right after.
   @override
-  EventualValue<T> withFreshness({int seconds, int milliseconds}) {
-    super.withFreshness(seconds: seconds, milliseconds: milliseconds);
+  EventualValue<T> withFreshnessTimeout(Duration duration) {
+    super.withFreshnessTimeout(duration);
     return this;
   }
 
@@ -22,8 +22,8 @@ class EventualNotifier<T> extends EventualValue<T> with ChangeNotifier {
   /// This method alters the timeout threshold with a new value.
   /// Returns itself so further methods can be chained right after.
   @override
-  EventualValue<T> withLoadingTimeout({int seconds, int milliseconds}) {
-    super.withLoadingTimeout(seconds: seconds, milliseconds: milliseconds);
+  EventualValue<T> withLoadingTimeout(Duration duration) {
+    super.withLoadingTimeout(duration);
     return this;
   }
 
