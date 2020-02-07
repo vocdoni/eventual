@@ -2,7 +2,15 @@
 
 Eventual provides a toolkit to manage **eventual values**, **notify** the UI when changes occur and **rebuild** the relevant widget subtree accordingly.
 
-This package allows for great flexibility in complex scenarios while keeping the focus on clean and simple approach. 
+This package allows for great flexibility in complex scenarios while keeping the focus on clean and simple approach.
+
+With Eventual you can:
+- Split the data lifecycle from the UI
+- Keep the UI simple and always in sync
+- Build data repositories that work on their own
+- Track the *loading*, *error*, *non-value* and *value* scenarios
+- Track whether values are fresh or need refreshing
+- Rebuild collections and deep values efficiently
 
 ## Getting Started
 

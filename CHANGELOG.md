@@ -1,3 +1,3 @@
-## [0.1.0] - First commit
+## [0.9.0] - First commit
 
-* Packaging the existing logic from [DVote Flutter](https://pub.dev/packages/dvote)
+* Extracting the existing logic from [DVote Flutter](https://pub.dev/packages/dvote)
