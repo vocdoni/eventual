@@ -1,84 +1,74 @@
 # eventual
 
-Eventual provides a toolkit to manage **eventual values**, **notify** the UI when changes occur and **rebuild** the relevant widget subtree accordingly.
+Eventual provides a toolkit to manage **eventual** values, **notify** the UI when changes occur and **rebuild** the relevant widget subtree accordingly.
 
 This package allows for great flexibility in complex scenarios while keeping the focus on clean and simple approach.
 
 With Eventual you can:
 - Split the data lifecycle from the UI
 - Keep the UI simple and always in sync
-- Build data repositories that work on their own
+- Work with data repositories
 - Track the *loading*, *error*, *non-value* and *value* scenarios
 - Track whether values are fresh or need refreshing
 - Rebuild collections and deep values efficiently
 
 ## Getting Started
 
-Check the [Installing tab](https://pub.dev/packages/event_bus#-installing-tab-), add `eventual` as a dependency on `pubspec.yaml` and import the package within your code.
-
-The lifecycle revolves around 3 classes:
-- `EventuaValue<T>`
-    - Used to manage plain state
-- `EventNotifier<T>`
-    - Manage plain state and emit `Listenable` events upon change
-- `EventualBuilder`
-  - A Widget that rebuilds whenever the notifier(s) change(s)
-
-Create your first `EventNotifier`:
+Create your first `EventualNotifier` wrapping an `int`:
 
 ```dart
 export "package:eventual/eventual.dart";
 
 void main() {
     // No value by default
-    final someScore = EventNotifier<int>();
+    final someScore = EventualNotifier<int>();
     print(someScore.value); // null
 
     // A default value
-    final myScore = EventNotifier<int>(97);
-    print(myScore.value); // 97
+    final userScore = EventualNotifier<int>(42);
+    print(userScore.value); // 42
 
     // Set to loading, but keep the value
-    myScore.loading = true;
+    userScore.loading = true;
 
-    print(myScore.value); // 97
-    print(myScore.isLoading); // true
+    print(userScore.value); // 42
+    print(userScore.isLoading); // true
 
     // Stop loading and set an error message while
     // the old value is still available
-    myScore.error = "Something went wrong";
+    userScore.error = "Something went wrong";
 
-    print(myScore.value); // 97
-    print(myScore.isLoading); // false
-    print(myScore.hasError); // true
-    print(myScore.errorMessage); // "Something went wrong"
+    print(userScore.value); // 42
+    print(userScore.isLoading); // false
+    print(userScore.hasError); // true
+    print(userScore.errorMessage); // "Something went wrong"
 
     // Set to loading with an optional message
-    myScore.loadingMessage = "Please, wait";
+    userScore.loadingMessage = "Please, wait";
 
-    print(myScore.value); // 97
-    print(myScore.isLoading); // false
-    print(myScore.loadingMessage); // "Please, wait"
-    print(myScore.hasError); // false
+    print(userScore.value); // 42
+    print(userScore.isLoading); // false
+    print(userScore.loadingMessage); // "Please, wait"
+    print(userScore.hasError); // false
 
     // Set a new value
-    myScore.value = 110;
+    userScore.value = 110;
     
     // All the available status getters
-    print(myScore.value); // 110
-    print(myScore.hasValue); // true
-    print(myScore.isLoading); // false
-    print(myScore.isLoadingFresh); // false
-    print(myScore.loadingMessage); // null
-    print(myScore.hasError); // false
-    print(myScore.errorMessage); // null
-    print(myScore.lastUpdated); // DateTime(...)
-    print(myScore.lastError); // null
-    print(myScore.isFresh); // true
+    print(userScore.value); // 110
+    print(userScore.hasValue); // true
+    print(userScore.isLoading); // false
+    print(userScore.isLoadingFresh); // false
+    print(userScore.loadingMessage); // null
+    print(userScore.hasError); // false
+    print(userScore.errorMessage); // null
+    print(userScore.lastUpdated); // DateTime(...)
+    print(userScore.lastError); // null
+    print(userScore.isFresh); // true
 }
 ```
 
-Consume the notifier on your Widget tree:
+Consume the `EventualNotifier` on your Widget tree with `EventualBuilder`:
 
 ```dart
 class MyWidget extends StatelessWidget {
@@ -128,7 +118,7 @@ class MyWidget extends StatelessWidget {
 }
 ```
 
-`EventualNotifier`'s can be consumed from a global repository or be created locally. In either case, the widget will update to reflect the latest version of the values.
+`EventualNotifier`'s can come from a global repository or be created locally. In either case, the widget will update to reflect the latest version of the values.
 
 ## Collections
 
@@ -140,7 +130,7 @@ However, tracking the state of inner values raises performance concerns and gets
 export "package:eventual/eventual.dart";
 
 void main() {
-    final numberList = EventNotifier<List<int>>([]);
+    final numberList = EventualNotifier<List<int>>([]);
     print(numberList.value); // []
 
     // Setting a new list, emits an event
@@ -174,12 +164,12 @@ In the example above, we could use a `List<EventualNotifiers<int>>` instead of a
 
 ```dart
 void main() {
-    final numberList = EventNotifier<List<EventNotifier<int>>>([]);
+    final numberList = EventualNotifier<List<EventualNotifier<int>>>([]);
 
-    final num1 = EventNotifier<int>(10);
-    final num2 = EventNotifier<int>();
-    final num3 = EventNotifier<int>().setError("Invalid number");
-    final num4 = EventNotifier<int>().setToLoading();
+    final num1 = EventualNotifier<int>(10);
+    final num2 = EventualNotifier<int>();
+    final num3 = EventualNotifier<int>().setError("Invalid number");
+    final num4 = EventualNotifier<int>().setToLoading();
 
     // Updating the list, emits an event to all `numberList` consumers
     numberList.value = [num1, num2, num3, num4]; // NOTIFY
@@ -195,7 +185,7 @@ Here is a UI example:
 ```dart
 void main() {
     // Set an empty list
-    final userList = EventNotifier<List<EventNotifier<String>>>();
+    final userList = EventualNotifier<List<EventualNotifier<String>>>();
 
     userList.loadingMessage = "Please, wait...";
 
@@ -220,7 +210,7 @@ void main() {
 }
 
 class MyUserList extends StatelessWidget {
-    final EventNotifier<List<EventNotifier<String>>> userList;
+    final EventualNotifier<List<EventualNotifier<String>>> userList;
 
     MyUserList(this.userList);
     
@@ -243,7 +233,7 @@ class MyUserList extends StatelessWidget {
                     return Text("There are no users yet");
                 
                 // All good, use the list value
-                final List<EventNotifier<String>> items = userList.value;
+                final List<EventualNotifier<String>> items = userList.value;
 
                 // Build individual children
                 return ListView.builder(
@@ -255,7 +245,7 @@ class MyUserList extends StatelessWidget {
 }
 
 class MyUserCard extends StatelessWidget {
-    final EventNotifier<String> userName;
+    final EventualNotifier<String> userName;
 
     MyUserCard(this.userName);
     
@@ -275,7 +265,7 @@ class MyUserCard extends StatelessWidget {
                 else if (!userName.hasValue) return Text("The user has no name yet");
                 
                 // All good, use the list value
-                final EventNotifier<String> name = userName.value;
+                final EventualNotifier<String> name = userName.value;
                 return InkWell(
                     child: Text("I am $name"),
                     onTap: () {
