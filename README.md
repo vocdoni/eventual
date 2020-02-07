@@ -1,8 +1,8 @@
 # Eventual for Flutter
 
-Eventual provides a toolkit to manage **eventual** values, **notify** the UI when changes occur and **rebuild** the relevant widget subtree accordingly.
+Eventual provides a toolkit to manage **eventual** data, **notify** the UI when changes occur and **rebuild** the relevant widget subtree accordingly.
 
-This package allows for great flexibility in complex scenarios while keeping the focus on clean and simple approach.
+This package allows for great flexibility in complex scenarios while keeping the focus on a clean and simple approach.
 
 With Eventual you can:
 - Split the data lifecycle from the UI
@@ -109,11 +109,11 @@ class MyWidget extends StatelessWidget {
 
 `EventualNotifier`'s can come from a global repository or be created locally. In either case, the widget will update to reflect the latest version of the values.
 
-## Collections
+## Collections and data structures
 
-Working with collections of objects is as simple as using a `List<*>` as the actual `value`.
+Working with collections of objects is as simple as using a `List<*>` as the actual `value` and `Map<*, *>`'s or custom classes for struct's. 
 
-However, tracking the state of inner values raises performance concerns and gets out of the scope of an `EventualNotifier`.
+However, tracking the inner values is out of the reach of an `EventualNotifier`.
 
 ```dart
 export "package:eventual/eventual.dart";
@@ -122,32 +122,48 @@ void main() {
   final numberList = EventualNotifier<List<int>>([]);
   print(numberList.value); // []
 
-  // Setting a new list, emits an event
-  numberList.value = [1, 2, 3, 4]; // => EMIT EVENT
+  setNewList(numberList, [1, 2, 3]);
+  
+  addUnnoticedElement(numberList);
+
+  addElementAndNotify(numberList);
+}
+
+void setNewList(EventualNotifier<List<int>> numberList, List<int> value) {
+  numberList.setValue(value); // => EMITS AN EVENT
+
+  print(numberList.value); // prints [1, 2, 3]
+  // EventualBuilder() would see [1, 2, 3]
+}
+
+void addUnnoticedElement(EventualNotifier<List<int>> numberList) {
+  numberList.value.add(4); // => NO EVENT
+
   print(numberList.value); // prints [1, 2, 3, 4]
-  // EventualBuilder would see [1, 2, 3, 4]
+  // EventualBuilder() would still see [1, 2, 3]
+}
 
-  // However, updating the list itself emits no event
-  numberList.value.add(5); // => NO EVENT
-  print(numberList.value); // prints [1, 2, 3, 4, 5]
-  // EventualBuilder still would see [1, 2, 3, 4]
-
-  // To force a notification, we can call setValue()
+void addElementAndNotify(EventualNotifier<List<int>> numberList) {
+  // To force a notification, we could use setValue()
   final tempList = numberList.value;
   tempList.add(5);
   numberList.setValue(tempList); // => EMIT EVENT
-  print(numberList.value); // prints [1, 2, 3, 4, 5]
-  // EventualBuilder now would see [1, 2, 3, 4, 5]
 
-  // Alternatively
+  print(numberList.value); // prints [1, 2, 3, 4, 5]
+  // EventualBuilder() now would see [1, 2, 3, 4, 5]
+  
+  // Or use notifyChange()
   numberList.value.add(6);
   numberList.notifyChange(); // => EMIT EVENT
+
   print(numberList.value); // prints [1, 2, 3, 4, 5, 6]
-  // EventualBuilder would also see [1, 2, 3, 4, 5, 6]
+  // EventualBuilder() would also see [1, 2, 3, 4, 5, 6]
 }
 ```
 
-Is there a way to be notified when an item changes? Depper state can be managed by splitting `EventualNotifier`'s into layers.
+Is there a way to be notified when a **nested item changes**?
+
+Depper state can be tracked by using `EventualNotifier`'s in layers.
 
 In the example above, we could use a `List<EventualNotifiers<int>>` instead of a `List<int>`.
 
@@ -161,11 +177,12 @@ void main() {
   final num4 = EventualNotifier<int>().setToLoading();
 
   // Updating the list, emits an event to all `numberList` consumers
-  numberList.value = [num1, num2, num3, num4]; // NOTIFY
+  numberList.value = [num1, num2, num3, num4]; // => EMIT EVENT
 
-  // Updating the item, emits an event to all `num1` consumers
+  // Updating the item, emits an event to all `num1` consumers, 
+  // and not `numberList`
   final item = numberList.value[0];
-  item.value = 200; // NOTIFY
+  item.value = 200; // => EMIT EVENT
 }
 ```
 
