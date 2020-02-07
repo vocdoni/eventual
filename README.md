@@ -36,7 +36,7 @@ void main() {
   print(userScore.isLoading); // true
   
   // Stop loading and set an error message while
-  // the old value is still available
+  // still keeping the previous value
   userScore.error = "Something went wrong";
   
   print(userScore.value); // 42
@@ -389,49 +389,51 @@ You may have spotted a few differences:
 
 ## EventualNotifier getters
 
+When using a `EventualNotifier` or a `EventualValue` you can query the following fields:
+
 ```dart
 void main() {
-  final someScore = EventualNotifier<int>(110);
+  final someNumber = EventualNotifier<int>(110);
   
   // The raw value or `null`
-  print(someScore.value);
+  print(someNumber.value);
   
   // Whether a non-null value is set
-  print(someScore.hasValue);
+  print(someNumber.hasValue);
   
   // Whether the value is set to be loading
-  print(someScore.isLoading);
+  print(someNumber.isLoading);
   
   // Whether loading was called up to 10 seconds ago
   // Customizable, see below
-  print(someScore.isLoadingFresh);
+  print(someNumber.isLoadingFresh);
   
   // An optional message about what is being loaded or null
-  print(someScore.loadingMessage);
+  print(someNumber.loadingMessage);
   
   // Whether an error is set
-  print(someScore.hasError);
+  print(someNumber.hasError);
   
   // The message of the last error
-  print(someScore.errorMessage);
+  print(someNumber.errorMessage);
   
   // DateTime when the value was set
-  print(someScore.lastUpdated);
+  print(someNumber.lastUpdated);
   
   // DateTime when the error was set
-  print(someScore.lastError);
+  print(someNumber.lastError);
   
   // Whether the value was set 10 or more seconds ago
   // Customizable, see below
-  print(someScore.isFresh);
+  print(someNumber.isFresh);
 
   // Modifiers
 
   final someName = EventualNotifier<String>("hello")
     // Consider the value obsolete after 60 seconds
-    .withFreshnessTimeout(seconds: 60)
+    .withFreshnessTimeout(Duration(seconds: 60))
     // Consider the loading stale after 5 seconds
-    .withLoadingTimeout(seconds: 5);
+    .withLoadingTimeout(Duration(seconds: 5));
   
   // Whether the value was set 10 or more seconds ago
   // Customizable, see below
@@ -441,9 +443,11 @@ void main() {
   // Customizable, see below
   print(someName.isLoadingFresh);
   
+  // Combine them all sequentially
+
   final someDate = EventualNotifier<DateTime>()
-    .withFreshnessTimeout(seconds: 1)
-    .withLoadingTimeout(milliseconds: 50)
+    .withFreshnessTimeout(Duration(seconds: 1))
+    .withLoadingTimeout(Duration(milliseconds: 50))
     .setError("No date yet")
     .setToLoading("Determining the current date")
     .setValue(DateTime.now());
