@@ -15,6 +15,8 @@ With Eventual you can:
 
 ## Getting Started
 
+### Getting some eventual data
+
 Create your first `EventualNotifier` wrapping an `int`:
 
 ```dart
@@ -85,6 +87,8 @@ Set to `loading` again, and fetch a value that may fail:
 }
 ```
 
+### Displaying our eventual data
+
 Now that you have an `EventualNotifier`, consume it on your Widget tree with `EventualBuilder`:
 
 ```dart
@@ -137,68 +141,13 @@ class MyWidget extends StatelessWidget {
 
 Working with collections of objects is as simple as using a `List<*>` as the actual `value`, whereas struct's can be managed with `Map<*, *>`'s or custom classes. 
 
-However, **tracking the inner changes within the `value` itself is out of the reach** of an `EventualNotifier`. In such case, an **explicit notification** is needed.
-
-As an example:
-
-```dart
-export "package:eventual/eventual.dart";
-
-void main() {
-  final numberList = EventualNotifier<List<int>>([]);
-  print(numberList.value); // []
-
-  setNewList(numberList, [1, 2, 3]);
-  
-  addUnnoticedElement(numberList);
-
-  addElementAndNotify(numberList);
-}
-
-// Replaces the value with a new list.
-// The change is automatically notified.
-void setNewList(EventualNotifier<List<int>> numberList, List<int> value) {
-  numberList.setValue(value); // => EMITS AN EVENT
-
-  print(numberList.value); // prints [1, 2, 3]
-  // EventualBuilder() would see [1, 2, 3]
-}
-
-// Modifies the internals of the list.
-// But since the list itself is the same, nobody knows about the change.
-void addUnnoticedElement(EventualNotifier<List<int>> numberList) {
-  // The modification happens on List, not on the notifier
-  numberList.value.add(4); // => NO EVENT
-
-  print(numberList.value); // prints [1, 2, 3, 4]
-  // EventualBuilder() would still see [1, 2, 3]
-}
-
-// Modifies the internals of the list and
-// triggers a manual notification
-void addElementAndNotify(EventualNotifier<List<int>> numberList) {
-  // To force a notification, we could use setValue()
-  final tempList = numberList.value;
-  tempList.add(5);
-  numberList.setValue(tempList); // => EMIT EVENT
-
-  print(numberList.value); // prints [1, 2, 3, 4, 5]
-  // EventualBuilder() now would see [1, 2, 3, 4, 5]
-  
-  // Or better, call notifyChange()
-  numberList.value.add(6);
-  numberList.notifyChange(); // => EMIT EVENT
-
-  print(numberList.value); // prints [1, 2, 3, 4, 5, 6]
-  // EventualBuilder() would also see [1, 2, 3, 4, 5, 6]
-}
-```
+However, **tracking the inner changes** within the `value` itself is **out of the reach** of an `EventualNotifier`. In such case, an explicit notification would be needed with `notifyChange()`.
 
 ### Nested change notifications
 
-The way to be notified when a **nested item changes** is by using `EventualNotifier`'s in layers.
+A better way to be notified when a **nested item changes** is by using `EventualNotifier`'s in layers.
 
-In the example above, we could use a `List<EventualNotifiers<int>>` instead of a `List<int>`.
+Below is an example that uses `List<EventualNotifiers<int>>` instead of a `List<int>`.
 
 ```dart
 void main() {
@@ -499,3 +448,8 @@ void main() {
 Eventual is inspired on the core concepts behind [Option](https://doc.rust-lang.org/rust-by-example/std/option.html) and [Result](https://doc.rust-lang.org/rust-by-example/std/result.html) from [Rust](https://www.rust-lang.org/);
 
 It also extends many concepts from `ValueNotifier<T>` in [Flutter](https://flutter.dev).
+
+## Future work
+
+- [ ] Provide a widget with builders for `loading`, `error` and `value` cases
+- [ ] Add a wrapper for lists and maps
