@@ -61,15 +61,15 @@ class EventualValue<T> {
   /// Returns the optional loading message string
   String get loadingMessage => _loadingMessage;
 
-  /// Returns `true` if `setToLoading()` was called more than X seconds ago (by default, 10).
-  /// Returns `false` if `setToLoading()` was recently called or the value is simply not "loading".
+  /// Returns `true` if `setToLoading()` was recently called (by default, 10 seconds).
+  /// Returns `false` if `setToLoading()` was called more than X seconds ago or the value is simply not "loading".
   bool get isLoadingFresh {
     if (!isLoading) return false;
 
     final stallThreshold = _loadingStartTimestamp.add(Duration(
         milliseconds:
             _loadingFreshnessTimeout)); // loading date + N milliseconds
-    return DateTime.now().isAfter(stallThreshold);
+    return DateTime.now().isBefore(stallThreshold);
   }
 
   /// Sets `loading = true` and sets the loading message

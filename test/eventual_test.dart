@@ -84,7 +84,7 @@ void testEventualValue() {
     expect(val.value, null);
     expect(val.hasValue, false);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, null);
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -108,7 +108,7 @@ void testEventualValue() {
     expect(val.value, null);
     expect(val.hasValue, false);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, "Please, wait...");
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -133,7 +133,7 @@ void testEventualValue() {
     expect(val2.value, null);
     expect(val2.hasValue, false);
     expect(val2.isLoading, true);
-    expect(val2.isLoadingFresh, false);
+    expect(val2.isLoadingFresh, true);
     expect(val2.loadingMessage, "Please, wait a bit more...");
     expect(val2.hasError, false);
     expect(val2.errorMessage, null);
@@ -200,7 +200,7 @@ void testEventualValue() {
     expect(val.value, 1234);
     expect(val.hasValue, true);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, "Please, wait...");
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -231,7 +231,7 @@ void testEventualValue() {
     expect(val.value, null);
     expect(val.hasValue, false);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, null);
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -255,7 +255,7 @@ void testEventualValue() {
     expect(val.value, 1234);
     expect(val.hasValue, true);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, "Please, wait...");
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -282,7 +282,7 @@ void testEventualValue() {
     expect(val.value, null);
     expect(val.hasValue, false);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, "Please, wait...");
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -306,7 +306,7 @@ void testEventualValue() {
     expect(val.value, null);
     expect(val.hasValue, false);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, "Please, wait a bit more...");
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -363,7 +363,7 @@ void testEventualValue() {
     expect(val.value, null);
     expect(val.hasValue, false);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, "Please, wait 50ms");
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -376,7 +376,7 @@ void testEventualValue() {
     expect(val.value, null);
     expect(val.hasValue, false);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, true);
+    expect(val.isLoadingFresh, false);
     expect(val.loadingMessage, "Please, wait 50ms");
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -391,7 +391,7 @@ void testEventualValue() {
     expect(val2.value, 1234);
     expect(val2.hasValue, true);
     expect(val2.isLoading, true);
-    expect(val2.isLoadingFresh, false);
+    expect(val2.isLoadingFresh, true);
     expect(val2.loadingMessage, "Please, wait 50ms more");
     expect(val2.hasError, false);
     expect(val2.errorMessage, null);
@@ -404,7 +404,7 @@ void testEventualValue() {
     expect(val2.value, 1234);
     expect(val2.hasValue, true);
     expect(val2.isLoading, true);
-    expect(val2.isLoadingFresh, true);
+    expect(val2.isLoadingFresh, false);
     expect(val2.loadingMessage, "Please, wait 50ms more");
     expect(val2.hasError, false);
     expect(val2.errorMessage, null);
@@ -530,7 +530,7 @@ void testEventualNotifier() {
     expect(val.value, null);
     expect(val.hasValue, false);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, null);
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -554,7 +554,7 @@ void testEventualNotifier() {
     expect(val.value, null);
     expect(val.hasValue, false);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, "Please, wait...");
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -579,7 +579,7 @@ void testEventualNotifier() {
     expect(val2.value, null);
     expect(val2.hasValue, false);
     expect(val2.isLoading, true);
-    expect(val2.isLoadingFresh, false);
+    expect(val2.isLoadingFresh, true);
     expect(val2.loadingMessage, "Please, wait a bit more...");
     expect(val2.hasError, false);
     expect(val2.errorMessage, null);
@@ -646,7 +646,7 @@ void testEventualNotifier() {
     expect(val.value, 1234);
     expect(val.hasValue, true);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, "Please, wait...");
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -677,7 +677,7 @@ void testEventualNotifier() {
     expect(val.value, null);
     expect(val.hasValue, false);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, null);
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -701,7 +701,7 @@ void testEventualNotifier() {
     expect(val.value, 1234);
     expect(val.hasValue, true);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, "Please, wait...");
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -728,7 +728,7 @@ void testEventualNotifier() {
     expect(val.value, null);
     expect(val.hasValue, false);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, "Please, wait...");
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -752,7 +752,7 @@ void testEventualNotifier() {
     expect(val.value, null);
     expect(val.hasValue, false);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, "Please, wait a bit more...");
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -809,7 +809,7 @@ void testEventualNotifier() {
     expect(val.value, null);
     expect(val.hasValue, false);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, false);
+    expect(val.isLoadingFresh, true);
     expect(val.loadingMessage, "Please, wait 50ms");
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -822,7 +822,7 @@ void testEventualNotifier() {
     expect(val.value, null);
     expect(val.hasValue, false);
     expect(val.isLoading, true);
-    expect(val.isLoadingFresh, true);
+    expect(val.isLoadingFresh, false);
     expect(val.loadingMessage, "Please, wait 50ms");
     expect(val.hasError, false);
     expect(val.errorMessage, null);
@@ -837,7 +837,7 @@ void testEventualNotifier() {
     expect(val2.value, 1234);
     expect(val2.hasValue, true);
     expect(val2.isLoading, true);
-    expect(val2.isLoadingFresh, false);
+    expect(val2.isLoadingFresh, true);
     expect(val2.loadingMessage, "Please, wait 50ms more");
     expect(val2.hasError, false);
     expect(val2.errorMessage, null);
@@ -850,7 +850,7 @@ void testEventualNotifier() {
     expect(val2.value, 1234);
     expect(val2.hasValue, true);
     expect(val2.isLoading, true);
-    expect(val2.isLoadingFresh, true);
+    expect(val2.isLoadingFresh, false);
     expect(val2.loadingMessage, "Please, wait 50ms more");
     expect(val2.hasError, false);
     expect(val2.errorMessage, null);

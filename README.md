@@ -22,11 +22,11 @@ export "package:eventual/eventual.dart";
 
 void main() {
   // No value by default
-  final someScore = EventualNotifier<int>();
+  final someScore = EventualNotifier<int>();
   print(someScore.value); // null
   
   // A default value
-  final userScore = EventualNotifier<int>(42);
+  final userScore = EventualNotifier<int>(42);
   print(userScore.value); // 42
   
   // Set to loading, but keep the value
@@ -44,12 +44,12 @@ void main() {
   print(userScore.hasError); // true
   print(userScore.errorMessage); // "Something went wrong"
   
-  // Set to loading with an optional message
-  userScore.loadingMessage = "Please, wait";
+  // Set to loading, now with a message
+  userScore.loadingMessage = "Please, wait and keep reading";
   
   print(userScore.value); // 42
-  print(userScore.isLoading); // false
-  print(userScore.loadingMessage); // "Please, wait"
+  print(userScore.isLoading); // true
+  print(userScore.loadingMessage); // "Please, wait and keep reading"
   print(userScore.hasError); // false
   
   // Set a new value
