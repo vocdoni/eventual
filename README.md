@@ -24,72 +24,95 @@ void main() {
   // No value by default
   final someScore = EventualNotifier<int>();
   print(someScore.value); // null
+  print(someScore.hasValue); // false
   
-  // A default value
+  // With a default value
   final userScore = EventualNotifier<int>(42);
   print(userScore.value); // 42
-  
+}
+```
+
+Set the status to `loading` before you fetch data from somewhere:
+
+```dart
+{
+  // ...
+
   // Set to loading, but keep the value
   userScore.loading = true;
   
   print(userScore.value); // 42
   print(userScore.isLoading); // true
+
+  final newValue = await successfulNumberFetch(/*...*/);
+}
+```
+
+Get the new value and update it (stops `loading`)
+
+```dart
+{
+  // ...
+
+  // Set the new value
+  userScore.value = newValue;
   
-  // Stop loading and set an error message while
-  // still keeping the previous value
-  userScore.error = "Something went wrong";
+  print(userScore.value); // 110
+  print(userScore.hasValue); // true
+  print(userScore.isLoading); // false
+}
+```
+
+Set to `loading` again, and fetch a value that may fail:
+
+```dart
+{
+  // ...
+
+  try {
+    // This would update the value if successful, but...
+    userScore.value = await failingNumberFetch(/*...*/);
+  } catch (err) {
+    // Stops loading, keeps the previous value
+    // and sets the error message
+    userScore.error = "Something went wrong";
+  }
   
   print(userScore.value); // 42
   print(userScore.isLoading); // false
   print(userScore.hasError); // true
   print(userScore.errorMessage); // "Something went wrong"
-  
-  // Set to loading, now with a message
-  userScore.loadingMessage = "Please, wait and keep reading";
-  
-  print(userScore.value); // 42
-  print(userScore.isLoading); // true
-  print(userScore.loadingMessage); // "Please, wait and keep reading"
-  print(userScore.hasError); // false
-  
-  // Set a new value
-  userScore.value = 110;
-  
-  print(userScore.value); // 110
-  print(userScore.hasValue); // true
 }
 ```
 
-Consume the `EventualNotifier` on your Widget tree with `EventualBuilder`:
+Now that you have an `EventualNotifier`, consume it on your Widget tree with `EventualBuilder`:
 
 ```dart
 class MyWidget extends StatelessWidget {
-  final EventualNotifier<String> userName;
   final EventualNotifier<int> userScore;
 
-  const MyWidget(this.userName, this.userScore) {
+  const MyWidget(this.userScore) {
     refreshScore();
   }
 
   @override
   Widget build(BuildContext context) {
-    // The widget consumes our eventual data from
-    // notifiers [userName, userScore]
+    // The widget consumes our eventual data from userScore
 
     return EventualBuilder(
-      notifiers: [userName, userScore],
+      notifier: userScore,
       builder: (context, notifierList, child) {
-        // This builder reruns every time that `userName` or `userScore` change
+        // This builder reruns every time that `userScore` changes
 
         // Is it still loading?
         if (userScore.loading) return Text(userScore.loadingMessage ?? "Loading...");
         
-        // Does it have an error?
-        if (!userScore.hasValue) return Text("${userName.value} has no score");
+        // Is there an error?
+        if (!userScore.hasValue) return Text("The user has no score");
         else if (userScore.hasError) return Text(userScore.errorMessage);
         
         // All good, use the value
-        return Text("${userName.value} has a score of ${userScore.value}");
+        return Text("The user has a score of ${userScore.value}");
       }
     );
   }
@@ -97,6 +120,7 @@ class MyWidget extends StatelessWidget {
   // Eventual data being changed
   refreshScore() async {
     userScore.loading = true;
+
     try {
       final newValue = await fetchNewScore(...),
       userScore.value = newValue; // build is triggered <==
@@ -107,13 +131,15 @@ class MyWidget extends StatelessWidget {
 }
 ```
 
-`EventualNotifier`'s can come from a global repository or be created locally. In either case, the widget will update to reflect the latest version of the values.
+`EventualNotifier`'s can come from a global repository or be created locally. In either case, the widget will rebuild to reflect the latest version of the value.
 
 ## Collections and data structures
 
-Working with collections of objects is as simple as using a `List<*>` as the actual `value` and `Map<*, *>`'s or custom classes for struct's. 
+Working with collections of objects is as simple as using a `List<*>` as the actual `value`, whereas struct's can be managed with `Map<*, *>`'s or custom classes. 
 
-However, tracking the inner values is out of the reach of an `EventualNotifier`.
+However, **tracking the inner changes within the `value` itself is out of the reach** of an `EventualNotifier`. In such case, an **explicit notification** is needed.
+
+As an example:
 
 ```dart
 export "package:eventual/eventual.dart";
@@ -129,6 +155,8 @@ void main() {
   addElementAndNotify(numberList);
 }
 
+// Replaces the value with a new list.
+// The change is automatically notified.
 void setNewList(EventualNotifier<List<int>> numberList, List<int> value) {
   numberList.setValue(value); // => EMITS AN EVENT
 
@@ -136,13 +164,18 @@ void setNewList(EventualNotifier<List<int>> numberList, List<int> value) {
   // EventualBuilder() would see [1, 2, 3]
 }
 
+// Modifies the internals of the list.
+// But since the list itself is the same, nobody knows about the change.
 void addUnnoticedElement(EventualNotifier<List<int>> numberList) {
+  // The modification happens on List, not on the notifier
   numberList.value.add(4); // => NO EVENT
 
   print(numberList.value); // prints [1, 2, 3, 4]
   // EventualBuilder() would still see [1, 2, 3]
 }
 
+// Modifies the internals of the list and
+// triggers a manual notification
 void addElementAndNotify(EventualNotifier<List<int>> numberList) {
   // To force a notification, we could use setValue()
   final tempList = numberList.value;
@@ -152,7 +185,7 @@ void addElementAndNotify(EventualNotifier<List<int>> numberList) {
   print(numberList.value); // prints [1, 2, 3, 4, 5]
   // EventualBuilder() now would see [1, 2, 3, 4, 5]
   
-  // Or use notifyChange()
+  // Or better, call notifyChange()
   numberList.value.add(6);
   numberList.notifyChange(); // => EMIT EVENT
 
@@ -161,9 +194,9 @@ void addElementAndNotify(EventualNotifier<List<int>> numberList) {
 }
 ```
 
-Is there a way to be notified when a **nested item changes**?
+### Nested change notifications
 
-Depper state can be tracked by using `EventualNotifier`'s in layers.
+The way to be notified when a **nested item changes** is by using `EventualNotifier`'s in layers.
 
 In the example above, we could use a `List<EventualNotifiers<int>>` instead of a `List<int>`.
 
@@ -181,8 +214,8 @@ void main() {
 
   // Updating the item, emits an event to all `num1` consumers, 
   // and not `numberList`
-  final item = numberList.value[0];
-  item.value = 200; // => EMIT EVENT
+  final notifierItem = numberList.value[0];
+  notifierItem.value = 200; // => EMIT EVENT
 }
 ```
 
@@ -206,6 +239,7 @@ void main() {
     userList.error = err.toString();
   });
 
+  // Paint the list
   runApp(MaterialApp(
     title: 'Eventual',
     home: Scaffold(
@@ -215,6 +249,7 @@ void main() {
   ));
 }
 
+// The collection
 class MyUserList extends StatelessWidget {
   final EventualNotifier<List<EventualNotifier<String>>> userList;
 
@@ -250,6 +285,7 @@ class MyUserList extends StatelessWidget {
   }
 }
 
+// A collection item
 class MyUserCard extends StatelessWidget {
   final EventualNotifier<String> userName;
 
@@ -288,7 +324,9 @@ class MyUserCard extends StatelessWidget {
 }
 ```
 
-This approach allows to efficiently update only the widgets that are using a certain part of the data. If the whole list changes, then `MyUserList > ListView.builder()` will rebuild a few rows. But if we only change an inner item, then only the affected instance of `MyUserCard` will rebuild.
+This approach allows to efficiently update only the widgets that are using a certain part of the data.
+- If the whole list changes, then `MyUserList > ListView.builder()` will rebuild a few rows. 
+- But if we update the second list element, then only the affected `MyUserCard` will rebuild (if visible).
 
 This is useful for apps with complex and large collections and data to avoid useless repaint work.
 
@@ -384,7 +422,7 @@ class HomePage extends StatelessWidget {
 
 You may have spotted a few differences:
 - The `StatefulWidget` rebuilds the entire widget even if only `counter` changes
-- The "eventual" version calls `build()` just once and `build()Counter` when needed
+- The "eventual" version calls `build()` just once and `buildCounter()` if needed
 - One class vs two classes for one Widget
 
 ## EventualNotifier getters

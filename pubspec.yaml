@@ -1,6 +1,6 @@
 name: eventual
 description: Data toolkit to manage eventual values and sync UI widgets with ease.
-version: 0.9.2
+version: 0.9.3
 homepage: https://gitlab.com/vocdoni/eventual
 repository: https://gitlab.com/vocdoni/eventual.git
 
