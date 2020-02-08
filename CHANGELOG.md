@@ -1,3 +1,7 @@
+## [0.9.3]
+
+* Fixing isLoadingFresh
+
 ## [0.9.2]
 
 * Accepting fresshness timeout's as a `Duration()`
