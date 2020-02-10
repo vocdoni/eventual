@@ -1,3 +1,7 @@
+## [0.10.1]
+
+* Allowing to set a default value, once created (useful for immutable references)
+
 ## [0.10.0]
 
 * Adding the `EventualBuilders` widget helper

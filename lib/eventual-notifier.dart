@@ -62,6 +62,16 @@ class EventualNotifier<T> extends EventualValue<T> with ChangeNotifier {
     return this;
   }
 
+  /// Sets a default `value` **only if the object has just been created** and no updates have been performed on it.
+  /// Use this method if you want to set a default value on an immutable EventualValue created elsewhere.
+  /// This is the same as invoking `final myValue = EventualValue<int>(defaultValue);`.
+  /// Returns `this` so further methods can be chained right after.
+  @override
+  EventualNotifier<T> setDefaultValue(T defaultValue) {
+    super.setDefaultValue(defaultValue);
+    return this;
+  }
+
   /// Explicitly emits a change notification to the listeners
   EventualNotifier<T> notifyChange() {
     _notifyChange();

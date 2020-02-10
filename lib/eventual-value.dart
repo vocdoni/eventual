@@ -172,6 +172,18 @@ class EventualValue<T> {
     return this;
   }
 
+  /// Sets a default `value` **only if the object has just been created** and no updates have been performed on it.
+  /// Use this method if you want to set a default value on an immutable EventualValue created elsewhere.
+  /// This is the same as invoking `final myValue = EventualValue<int>(defaultValue);`.
+  /// Returns `this` so further methods can be chained right after.
+  EventualValue<T> setDefaultValue(T defaultValue) {
+    if (hasValue || isLoading || hasError || lastUpdated != null)
+      throw Exception(
+          "The default value can't be set once the object has been updated. Use setValue() instead.");
+    _value = defaultValue;
+    return this;
+  }
+
   /// Returns `true` only if a valid value was set less than 10 seconds ago
   bool get isFresh {
     if (!hasValue || !(_valueUpdated is DateTime)) return false;

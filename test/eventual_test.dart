@@ -23,8 +23,6 @@ void testEventualValue() {
     expect(val.lastUpdated, null);
     expect(val.lastError, null);
     expect(val.isFresh, false);
-
-    // expect(() => calculator.addOne(null), throwsNoSuchMethodError);
   });
 
   test('is created with a default value', () {
@@ -39,6 +37,26 @@ void testEventualValue() {
     expect(val.lastUpdated, null);
     expect(val.lastError, null);
     expect(val.isFresh, false);
+
+    final val2 = EventualValue<int>();
+    val2.setDefaultValue(1234);
+    expect(val2.value, 1234);
+    expect(val2.hasValue, true);
+    expect(val2.isLoading, false);
+    expect(val2.isLoadingFresh, false);
+    expect(val2.loadingMessage, null);
+    expect(val2.hasError, false);
+    expect(val2.errorMessage, null);
+    expect(val2.lastUpdated, null);
+    expect(val2.lastError, null);
+    expect(val2.isFresh, false);
+
+    final val3 = EventualNotifier<int>(42);
+    expect(() => val3.setDefaultValue(1234), throwsException);
+    expect(val3.value, 42);
+    val3.setValue(1000);
+    expect(() => val3.setDefaultValue(1234), throwsException);
+    expect(val3.value, 1000);
   });
 
   test('updates the current value', () {
@@ -469,8 +487,6 @@ void testEventualNotifier() {
     expect(val.lastUpdated, null);
     expect(val.lastError, null);
     expect(val.isFresh, false);
-
-    // expect(() => calculator.addOne(null), throwsNoSuchMethodError);
   });
 
   test('is created with a default value', () {
@@ -485,6 +501,26 @@ void testEventualNotifier() {
     expect(val.lastUpdated, null);
     expect(val.lastError, null);
     expect(val.isFresh, false);
+
+    final val2 = EventualNotifier<int>();
+    val2.setDefaultValue(1234);
+    expect(val2.value, 1234);
+    expect(val2.hasValue, true);
+    expect(val2.isLoading, false);
+    expect(val2.isLoadingFresh, false);
+    expect(val2.loadingMessage, null);
+    expect(val2.hasError, false);
+    expect(val2.errorMessage, null);
+    expect(val2.lastUpdated, null);
+    expect(val2.lastError, null);
+    expect(val2.isFresh, false);
+
+    final val3 = EventualNotifier<int>(42);
+    expect(() => val3.setDefaultValue(1234), throwsException);
+    expect(val3.value, 42);
+    val3.setValue(1000);
+    expect(() => val3.setDefaultValue(1234), throwsException);
+    expect(val3.value, 1000);
   });
 
   test('updates the current value', () {
