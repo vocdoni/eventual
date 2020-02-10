@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:eventual/eventual-notifier.dart';
 
+/// EventualBuilder provides a builder that rebuilds every time that any of `notifier` or
+/// `notifiers` is updated. Either of them must be provided. 
 class EventualBuilder extends StatefulWidget {
   final List<EventualNotifier> notifiers = List<EventualNotifier>();
   final Widget Function(BuildContext, List<EventualNotifier>, Widget) builder;

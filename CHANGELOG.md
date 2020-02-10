@@ -1,3 +1,7 @@
+## [0.10.0]
+
+* Adding the `EventualBuilders` widget helper
+
 ## [0.9.3]
 
 * Fixing isLoadingFresh

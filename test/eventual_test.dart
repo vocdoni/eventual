@@ -7,6 +7,7 @@ void main() {
   testEventualValue();
   testEventualNotifier();
   testEventualBuilder();
+  testEventualBuilders();
 }
 
 void testEventualValue() {
@@ -906,7 +907,7 @@ void testEventualBuilder() {
       (WidgetTester tester) async {
     final name = EventualNotifier<String>();
 
-    await tester.pumpWidget(EventualTesterWidget(notifier: name));
+    await tester.pumpWidget(EventualBuilderTester(notifier: name));
 
     expect(find.text("notifierList.length: 1"), findsOneWidget,
         reason: "notifierList.length should be 1, but it isn't");
@@ -969,7 +970,7 @@ void testEventualBuilder() {
     final value3 = EventualNotifier<String>("users");
 
     await tester
-        .pumpWidget(EventualTesterWidget(notifiers: [value1, value2, value3]));
+        .pumpWidget(EventualBuilderTester(notifiers: [value1, value2, value3]));
 
     expect(find.text("notifierList.length: 3"), findsOneWidget,
         reason: "notifierList.length should be 3, but it isn't");
@@ -983,11 +984,127 @@ void testEventualBuilder() {
   });
 }
 
-class EventualTesterWidget extends StatelessWidget {
+void testEventualBuilders() {
+  testWidgets('EventuallBuilders handles one value',
+      (WidgetTester tester) async {
+    final name = EventualNotifier<String>();
+
+    await tester.pumpWidget(EventualBuildersTester(notifier: name));
+
+    expect(find.text("notifier.value = null"), findsOneWidget,
+        reason: "value should be null, but it isn't");
+    expect(find.text("notifier.hasValue = false"), findsOneWidget,
+        reason: "hasValue should be false, but it isn't");
+    expect(find.text("notifier.value = Hello"), findsNothing,
+        reason: "value should be Hello but it isn't");
+
+    name.value = "Hello";
+    await tester.pump();
+
+    expect(find.text("notifier.value = Hello"), findsOneWidget,
+        reason: "value should be Hello, but it isn't");
+    expect(find.text("notifier.value = null"), findsNothing,
+        reason: "value should be null but it isn't");
+    expect(find.text("notifier.hasValue = true"), findsOneWidget,
+        reason: "hasValue should be true, but it isn't");
+
+    name.error = "Oh my!";
+    await tester.pump();
+
+    expect(find.text("notifier.value = Hello"), findsOneWidget,
+        reason: "value should be Hello, but it isn't");
+    expect(find.text("notifier.value = null"), findsNothing,
+        reason: "value should be null but it isn't");
+    expect(find.text("notifier.hasValue = true"), findsOneWidget,
+        reason: "hasValue should be true, but it isn't");
+    expect(find.text("notifier.errorMessage = Oh my!"), findsOneWidget,
+        reason: "errorMessage should be Oh my!, but it isn't");
+    expect(find.text("notifier.hasError = true"), findsOneWidget,
+        reason: "hasError should be true, but it isn't");
+
+    name.loadingMessage = "Please wait...";
+    await tester.pump();
+
+    expect(find.text("notifier.value = Hello"), findsOneWidget,
+        reason: "value should be Hello, but it isn't");
+    expect(find.text("notifier.value = null"), findsNothing,
+        reason: "value should be null but it isn't");
+    expect(find.text("notifier.hasValue = true"), findsOneWidget,
+        reason: "hasValue should be true, but it isn't");
+    expect(find.text("notifier.errorMessage = null"), findsOneWidget,
+        reason: "errorMessage should be null, but it isn't");
+    expect(find.text("notifier.hasError = false"), findsOneWidget,
+        reason: "hasError should be true, but it isn't");
+    expect(
+        find.text("notifier.loadingMessage = Please wait..."), findsOneWidget,
+        reason: "loadingMessage should be Please wait..., but it isn't");
+    expect(find.text("notifier.isLoading = true"), findsOneWidget,
+        reason: "isLoading should be true, but it isn't");
+  });
+
+  testWidgets('EventuallBuilders handles the four states',
+      (WidgetTester tester) async {
+    final value = EventualNotifier<String>();
+
+    await tester.pumpWidget(EventualBuildersTester(notifier: value));
+
+    expect(find.text("state = empty"), findsOneWidget,
+        reason: "state should be empty, but it isn't");
+    expect(find.text("notifier.value = null"), findsOneWidget,
+        reason: "value should be empty, but it isn't");
+    expect(find.text("notifier.loadingMessage = null"), findsOneWidget,
+        reason: "loadingMessage should be empty but it isn't");
+    expect(find.text("notifier.errorMessage = null"), findsOneWidget,
+        reason: "errorMessage should be empty but it isn't");
+
+    value.setToLoading("Please, wait...");
+
+    await tester.pump();
+
+    expect(find.text("state = loading"), findsOneWidget,
+        reason: "state should be loading, but it isn't");
+    expect(find.text("notifier.value = null"), findsOneWidget,
+        reason: "value should be empty, but it isn't");
+    expect(
+        find.text("notifier.loadingMessage = Please, wait..."), findsOneWidget,
+        reason: "loadingMessage should be Please, wait... but it isn't");
+    expect(find.text("notifier.errorMessage = null"), findsOneWidget,
+        reason: "errorMessage should be empty but it isn't");
+
+    value.setError("Something bad happened");
+
+    await tester.pump();
+
+    expect(find.text("state = error"), findsOneWidget,
+        reason: "state should be error, but it isn't");
+    expect(find.text("notifier.value = null"), findsOneWidget,
+        reason: "value should be empty, but it isn't");
+    expect(find.text("notifier.loadingMessage = null"), findsOneWidget,
+        reason: "loadingMessage should be empty but it isn't");
+    expect(find.text("notifier.errorMessage = Something bad happened"),
+        findsOneWidget,
+        reason: "errorMessage should be Something bad happened but it isn't");
+
+    value.setValue("Hello");
+
+    await tester.pumpWidget(EventualBuildersTester(notifier: value));
+
+    expect(find.text("state = value"), findsOneWidget,
+        reason: "state should be value, but it isn't");
+    expect(find.text("notifier.value = Hello"), findsOneWidget,
+        reason: "value should be Hello, but it isn't");
+    expect(find.text("notifier.loadingMessage = null"), findsOneWidget,
+        reason: "loadingMessage should be empty but it isn't");
+    expect(find.text("notifier.errorMessage = null"), findsOneWidget,
+        reason: "errorMessage should be empty but it isn't");
+  });
+}
+
+class EventualBuilderTester extends StatelessWidget {
   final EventualNotifier<String> notifier;
   final List<EventualNotifier<String>> notifiers;
 
-  const EventualTesterWidget({
+  const EventualBuilderTester({
     Key key,
     this.notifier,
     this.notifiers,
@@ -1032,6 +1149,51 @@ class EventualTesterWidget extends StatelessWidget {
       Text("notifierList[$idx].lastUpdated = ${notifierList[idx].lastUpdated}"),
       Text("notifierList[$idx].lastError = ${notifierList[idx].lastError}"),
       Text("notifierList[$idx].isFresh = ${notifierList[idx].isFresh}"),
+    ]);
+  }
+}
+
+class EventualBuildersTester extends StatelessWidget {
+  final EventualNotifier<String> notifier;
+
+  const EventualBuildersTester({
+    Key key,
+    this.notifier,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Eventual Test',
+      home: Scaffold(
+        body: EventualBuilders(
+          notifier: notifier,
+          loadingBuilder: (context, _, child) =>
+              Center(child: buildDumpNotifier(notifier, "loading")),
+          errorBuilder: (context, _, child) =>
+              Center(child: buildDumpNotifier(notifier, "error")),
+          emptyBuilder: (context, _, child) =>
+              Center(child: buildDumpNotifier(notifier, "empty")),
+          builder: (context, _, child) =>
+              Center(child: buildDumpNotifier(notifier, "value")),
+        ),
+      ),
+    );
+  }
+
+  buildDumpNotifier(EventualNotifier notifier, String expectedState) {
+    return Column(children: <Widget>[
+      Text("state = $expectedState"),
+      Text("notifier.value = ${notifier.value}"),
+      Text("notifier.hasValue = ${notifier.hasValue}"),
+      Text("notifier.isLoading = ${notifier.isLoading}"),
+      Text("notifier.isLoadingFresh = ${notifier.isLoadingFresh}"),
+      Text("notifier.loadingMessage = ${notifier.loadingMessage}"),
+      Text("notifier.hasError = ${notifier.hasError}"),
+      Text("notifier.errorMessage = ${notifier.errorMessage}"),
+      Text("notifier.lastUpdated = ${notifier.lastUpdated}"),
+      Text("notifier.lastError = ${notifier.lastError}"),
+      Text("notifier.isFresh = ${notifier.isFresh}"),
     ]);
   }
 }

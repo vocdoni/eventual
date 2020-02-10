@@ -15,7 +15,7 @@ With Eventual you can:
 
 ## Getting Started
 
-### Getting some eventual data
+### Setting some eventual data
 
 Create your first `EventualNotifier` wrapping an `int`:
 
@@ -105,6 +105,7 @@ class MyWidget extends StatelessWidget {
 
     return EventualBuilder(
       notifier: userScore,
+      // notifiers: [userScore, ...],     (also accepts more than one)
       builder: (context, notifierList, child) {
         // This builder reruns every time that `userScore` changes
 
@@ -136,6 +137,50 @@ class MyWidget extends StatelessWidget {
 ```
 
 `EventualNotifier`'s can come from a global repository or be created locally. In either case, the widget will rebuild to reflect the latest version of the value.
+
+### Display one notifier
+
+While `EventualNotifier` supports an array of `notifiers: []`, you can also use `EventualBuilders` if you only need to consume one.
+
+This provides a cleaner way to achieve a similar result:
+
+```dart
+class MyWidget extends StatelessWidget {
+  final EventualNotifier<int> userScore;
+
+  const MyWidget(this.userScore) {
+    refreshScore();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // The widget consumes our eventual data from userScore
+
+    return EventualBuilders(
+      notifier: userScore,
+      // optional builder
+      loadingBuilder: (_, __, ___) => Text(userScore.loadingMessage ?? "Loading..."),
+      // optional builder
+      errorBuilder: (_, __, ___) => Text(userScore.errorMessage),
+      // optional builder
+      emptyBuilder: (_, __, ___) => Text("The user has no score"),
+      // required
+      builder: (context, notifierList, child) {
+        // All good, use the value
+        return Text("The user has a score of ${userScore.value}");
+      }
+    );
+  }
+
+  refreshScore() {
+    userScore.loading = true;
+
+    fetchNewScore(...)
+      .then((newValue) => userScore.value = newValue)
+      .catchError((err) => userScore.error = err.toString());
+  }
+}
+```
 
 ## Collections and data structures
 
