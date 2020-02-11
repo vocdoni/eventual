@@ -1,3 +1,7 @@
+## [0.10.2]
+
+* Fix the return type of overriden EventualNotifiers
+
 ## [0.10.1]
 
 * Allowing to set a default value, once created (useful for immutable references)
