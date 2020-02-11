@@ -1,23 +1,23 @@
 # Eventual for Flutter
 
-Eventual provides a toolkit to manage **eventual** data, **notify** the UI when changes occur and **rebuild** the relevant widget subtree accordingly.
+Eventual provides a flexible and composable toolkit to perform State Management. Track the status of **eventual** data, **notify** the UI when changes occur and **rebuild** the relevant widget subtree accordingly.
 
 This package allows for great flexibility in complex scenarios while keeping the focus on a clean and simple approach.
 
 With Eventual you can:
 - Split the data lifecycle from the UI
 - Keep the UI simple and always in sync
-- Work with easily composable and usable data repositories
-- Rebuild collections and deep structures efficiently
+- Work with composable and straightforward data repositories
+- Render collections and deep structures efficiently
 - Track the availability of data and show only relevant pixels
 - Track whether values are fresh or need updating
-- Leaner stateful widgets than `StatefulWidget`
+- Get leaner stateful widgets than `StatefulWidget`
 
 ## Getting Started
 
 ### Setting some eventual data
 
-Create your first `EventualNotifier` wrapping an `int`:
+Create your first `EventualNotifier` wrapping an `int`:
 
 ```dart
 export "package:eventual/eventual.dart";
@@ -70,6 +70,7 @@ Set to `loading` again, and fetch a value that may fail:
 ```dart
 {
   // ...
+  userScore.loadingMessage = "Please, wait...";
 
   try {
     // This would update the value if successful, but...
@@ -87,13 +88,13 @@ Set to `loading` again, and fetch a value that may fail:
 }
 ```
 
-### Displaying our eventual data
+### Displaying our eventual notifiers
 
-Now that you have an `EventualNotifier`, consume it on your Widget tree with `EventualBuilder`:
+Now we have an `EventualNotifier` with data. Let's consume it on our Widget tree with an `EventualBuilder`:
 
 ```dart
 class MyWidget extends StatelessWidget {
-  final EventualNotifier<int> userScore;
+  final EventualNotifier<int> userScore = EventualNotifier<int>();
 
   const MyWidget(this.userScore) {
     refreshScore();
@@ -105,8 +106,8 @@ class MyWidget extends StatelessWidget {
 
     return EventualBuilder(
       notifier: userScore,
-      // notifiers: [userScore, ...],     (also accepts more than one)
-      builder: (context, notifierList, child) {
+      // notifiers: [userScore, ...],
+      builder: (context, notifiers, child) {
         // This builder reruns every time that `userScore` changes
 
         // Is it still loading?
@@ -122,25 +123,22 @@ class MyWidget extends StatelessWidget {
     );
   }
 
-  // Eventual data being changed
-  refreshScore() async {
+  // Eventual data being updated
+  refreshScore() {
     userScore.loading = true;
 
-    try {
-      final newValue = await fetchNewScore(...),
-      userScore.value = newValue; // build is triggered <==
-    } catch(err) {
-      userScore.error = err.toString(); // build is triggered <==
-    }
+    fetchNewScore(...)
+      .then((newValue) => userScore.value = newValue)
+      .catchError((err) => userScore.error = err.toString());
   }
 }
 ```
 
-`EventualNotifier`'s can come from a global repository or be created locally. In either case, the widget will rebuild to reflect the latest version of the value.
+`EventualNotifier`'s can be from a global repository or be created locally. In either case, the widget will rebuild to reflect the latest version of the value.
 
-### Display one notifier
+### Single notifier widget
 
-While `EventualNotifier` supports an array of `notifiers: []`, you can also use `EventualBuilders` if you only need to consume one.
+While `EventualNotifier` supports one or more notifiers, you can also use `EventualSingleBuilder` if you only need to consume one.
 
 This provides a cleaner way to achieve a similar result:
 
@@ -156,22 +154,23 @@ class MyWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     // The widget consumes our eventual data from userScore
 
-    return EventualBuilders(
+    return EventualSingleBuilder(
       notifier: userScore,
       // optional builder
-      loadingBuilder: (_, __, ___) => Text(userScore.loadingMessage ?? "Loading..."),
+      loadingBuilder: (ctx, notifier, child) => Text(userScore.loadingMessage ?? "Loading..."),
       // optional builder
-      errorBuilder: (_, __, ___) => Text(userScore.errorMessage),
+      errorBuilder: (ctx, notifier, child) => Text(userScore.errorMessage),
       // optional builder
-      emptyBuilder: (_, __, ___) => Text("The user has no score"),
+      emptyBuilder: (ctx, notifier, child) => Text("The user has no score"),
       // required
-      builder: (context, notifierList, child) {
+      builder: (ctx, notifier, child) {
         // All good, use the value
         return Text("The user has a score of ${userScore.value}");
       }
     );
   }
 
+  // Eventual data being updated
   refreshScore() {
     userScore.loading = true;
 
@@ -186,7 +185,7 @@ class MyWidget extends StatelessWidget {
 
 Working with collections of objects is as simple as using a `List<*>` as the actual `value`, whereas struct's can be managed with `Map<*, *>`'s or custom classes. 
 
-However, **tracking the inner changes** within the `value` itself is **out of the reach** of an `EventualNotifier`. In such case, an explicit notification would be needed with `notifyChange()`.
+`EventualNotifier` does a shallow comparison once a new value is pushed to it. However, **tracking the inner changes** within the `value` itself is **out of the reach** of an `EventualNotifier`. In such case, an explicit notification would be needed with `notifyChange()`.
 
 ### Nested change notifications
 
@@ -196,19 +195,21 @@ Below is an example that uses `List<EventualNotifiers<int>>` instead of a `List<
 
 ```dart
 void main() {
-  final numberList = EventualNotifier<List<EventualNotifier<int>>>([]);
-
+  // A few notifiers
   final num1 = EventualNotifier<int>(10);
   final num2 = EventualNotifier<int>();
   final num3 = EventualNotifier<int>().setError("Invalid number");
   final num4 = EventualNotifier<int>().setToLoading();
+
+  // A list of notifiers
+  final numberList = EventualNotifier<List<EventualNotifier<int>>>([num1, num2]);
 
   // Updating the list, emits an event to all `numberList` consumers
   numberList.value = [num1, num2, num3, num4]; // => EMIT EVENT
 
   // Updating the item, emits an event to all `num1` consumers, 
   // and not `numberList`
-  final notifierItem = numberList.value[0];
+  final notifierItem = numberList.first;
   notifierItem.value = 200; // => EMIT EVENT
 }
 ```
@@ -228,7 +229,7 @@ void main() {
     // => Triggers MyUserList > build > EventualBuilder > builder()
     userList.value = users;
   }).catchError((err) {
-    // Update the list
+    // Update the list state
     // => Triggers MyUserList > build > EventualBuilder > builder()
     userList.error = err.toString();
   });
@@ -251,35 +252,27 @@ class MyUserList extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    // Consume the outer notifier (the list)
-    return EventualBuilder(
+    // Consume the user list
+    return EventualSingleBuilder(
       notifier: userList,
-      builder: (context, _, __) {
-        // When `userList` is updated, this builder reruns
-        
-        // Is the list still loading?
-        if (userList.loading)
-          return Text(userList.loadingMessage ?? "Loading users...");
-        
-        // Does it have an error?
-        if (userList.hasError)
-          return Text(userList.errorMessage);
-        else if (!userList.hasValue)
-          return Text("There are no users yet");
-        
-        // All good, use the list value
-        final List<EventualNotifier<String>> items = userList.value;
+      loadingBuilder: (ctx, notifier, child) => Text(userList.loadingMessage ?? "Loading users..."),
+      errorBuilder: (ctx, notifier, child) => Text(userList.errorMessage),
+      emptyBuilder: (ctx, notifier, child) => Text("There are no users yet"),
+      builder: (ctx, notifier, child) {
+        // All good, use the value
+        final items = userList.value;
 
         // Build individual children
         return ListView.builder(
           itemCount: items.length,
           itemBuilder: (BuildContext ctx, int index) => MyUserCard(items[index]),
         );
-      });
+      }
+    );
   }
 }
 
-// A collection item
+// An item
 class MyUserCard extends StatelessWidget {
   final EventualNotifier<String> userName;
 
@@ -288,22 +281,18 @@ class MyUserCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Consume an inner notifier
-    return EventualBuilder(
+    return EventualSingleBuilder(
       notifier: userName,
-      builder: (context, _, __) {
-        // When `userList[index]` or `userName` is updated, this builder reruns
-        
-        // Is the item loading?
-        if (userName.loading) return Text(userName.loadingMessage ?? "Loading user name...");
-        
-        // Does the item have an error?
-        if (userName.hasError) return Text(userName.errorMessage);
-        else if (!userName.hasValue) return Text("The user has no name yet");
-        
+      loadingBuilder: (ctx, notifier, child) => Text(userList.loadingMessage ?? "Loading the user's name..."),
+      errorBuilder: (ctx, notifier, child) => Text(userList.errorMessage),
+      emptyBuilder: (ctx, notifier, child) => Text("This user has no name yet"),
+      builder: (ctx, notifier, child) {
+        // When `userList[index]` is updated, the appropriate builder reruns
+
         // All good, use the list value
-        final EventualNotifier<String> name = userName.value;
+        final name = userName.value;
         return InkWell(
-          child: Text("I am $name"),
+          child: Text("I am $name\n\nTap to update me"),
           onTap: () {
             // Update the user value
             userName.loading = "This is a fake loading request";
@@ -313,7 +302,7 @@ class MyUserCard extends StatelessWidget {
           }
         );
       }
-    });
+    );
   }
 }
 ```
@@ -419,7 +408,7 @@ You may have spotted a few differences:
 - The "eventual" version calls `build()` just once and `buildCounter()` if needed
 - One class vs two classes for one Widget
 
-## EventualNotifier getters
+## EventualNotifier
 
 When using a `EventualNotifier` or a `EventualValue` you can query the following fields:
 
@@ -478,9 +467,10 @@ void main() {
   // Combine them all sequentially
 
   final someDate = EventualNotifier<DateTime>()
+    .setDefaultValue(DateTime.now())
     .withFreshnessTimeout(Duration(seconds: 1))
     .withLoadingTimeout(Duration(milliseconds: 50))
-    .setError("No date yet")
+    .setError("Invalid date")
     .setToLoading("Determining the current date")
     .setValue(DateTime.now());
   
@@ -496,5 +486,5 @@ It also extends many concepts from `ValueNotifier<T>` in [Flutter](https://flutt
 
 ## Future work
 
-- [ ] Provide a widget with builders for `loading`, `error` and `value` cases
+- [X] Provide a widget with builders for `loading`, `error` and `value` cases
 - [ ] Add a wrapper for lists and maps

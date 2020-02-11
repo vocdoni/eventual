@@ -1,3 +1,8 @@
+## [0.10.3]
+
+* Renaming `EventualBuilders` into `EventualSingleBuilder`
+* Improving the readme
+
 ## [0.10.2]
 
 * Fix the return type of overriden EventualNotifiers

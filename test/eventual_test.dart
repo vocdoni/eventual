@@ -7,7 +7,7 @@ void main() {
   testEventualValue();
   testEventualNotifier();
   testEventualBuilder();
-  testEventualBuilders();
+  testEventualSingleBuilder();
 }
 
 void testEventualValue() {
@@ -1020,12 +1020,12 @@ void testEventualBuilder() {
   });
 }
 
-void testEventualBuilders() {
+void testEventualSingleBuilder() {
   testWidgets('EventuallBuilders handles one value',
       (WidgetTester tester) async {
     final name = EventualNotifier<String>();
 
-    await tester.pumpWidget(EventualBuildersTester(notifier: name));
+    await tester.pumpWidget(EventualSingleBuilderTester(notifier: name));
 
     expect(find.text("notifier.value = null"), findsOneWidget,
         reason: "value should be null, but it isn't");
@@ -1082,7 +1082,7 @@ void testEventualBuilders() {
       (WidgetTester tester) async {
     final value = EventualNotifier<String>();
 
-    await tester.pumpWidget(EventualBuildersTester(notifier: value));
+    await tester.pumpWidget(EventualSingleBuilderTester(notifier: value));
 
     expect(find.text("state = empty"), findsOneWidget,
         reason: "state should be empty, but it isn't");
@@ -1123,7 +1123,7 @@ void testEventualBuilders() {
 
     value.setValue("Hello");
 
-    await tester.pumpWidget(EventualBuildersTester(notifier: value));
+    await tester.pumpWidget(EventualSingleBuilderTester(notifier: value));
 
     expect(find.text("state = value"), findsOneWidget,
         reason: "state should be value, but it isn't");
@@ -1189,10 +1189,10 @@ class EventualBuilderTester extends StatelessWidget {
   }
 }
 
-class EventualBuildersTester extends StatelessWidget {
+class EventualSingleBuilderTester extends StatelessWidget {
   final EventualNotifier<String> notifier;
 
-  const EventualBuildersTester({
+  const EventualSingleBuilderTester({
     Key key,
     this.notifier,
   }) : super(key: key);
@@ -1202,7 +1202,7 @@ class EventualBuildersTester extends StatelessWidget {
     return MaterialApp(
       title: 'Eventual Test',
       home: Scaffold(
-        body: EventualBuilders(
+        body: EventualSingleBuilder(
           notifier: notifier,
           loadingBuilder: (context, _, child) =>
               Center(child: buildDumpNotifier(notifier, "loading")),

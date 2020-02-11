@@ -24,10 +24,10 @@ class EventualBuilder extends StatefulWidget {
   }
 
   @override
-  _EventualBuilderState createState() => _EventualBuilderState();
+  _EventualSingleBuildertate createState() => _EventualSingleBuildertate();
 }
 
-class _EventualBuilderState extends State<EventualBuilder> {
+class _EventualSingleBuildertate extends State<EventualBuilder> {
   int _buildCount = 0;
 
   @override
