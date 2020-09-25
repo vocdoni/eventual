@@ -159,7 +159,7 @@ class EventualValue<T> {
   /// tracks the update time and sets the loading flag to false.
   /// Returns `this` so further methods can be chained right after.
   EventualValue<T> setValue(T newValue) {
-    if (_value == newValue && !this.isLoading) return this;
+    if (_value == newValue && !this.isLoading && !this.hasError) return this;
 
     _value = newValue;
     _valueUpdated = DateTime.now();
@@ -184,9 +184,9 @@ class EventualValue<T> {
     return this;
   }
 
-  /// Returns `true` only if a valid value was set less than 10 seconds ago
+  /// Returns `true` only if a valid value was set less than N seconds ago
   bool get isFresh {
-    if (!hasValue || !(_valueUpdated is DateTime)) return false;
+    if (!hasValue || _valueUpdated is! DateTime) return false;
 
     final freshThreshold = _valueUpdated.add(Duration(
         milliseconds: _valueFreshnessTimeout)); // update date + N milliseconds

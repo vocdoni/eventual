@@ -1,0 +1,21 @@
+name: eventual_example
+description: Data toolkit to manage eventual values and sync UI widgets with ease.
+version: 1.0.0
+homepage: https://gitlab.com/vocdoni/eventual
+repository: https://gitlab.com/vocdoni/eventual.git
+
+environment:
+  sdk: ">=2.2.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  eventual:
+    path: ..
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+# The following section is specific to Flutter.
+flutter:
