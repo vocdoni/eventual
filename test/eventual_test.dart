@@ -1137,11 +1137,11 @@ void testEventualSingleBuilder() {
 }
 
 class EventualBuilderTester extends StatelessWidget {
-  final EventualNotifier<String> notifier;
-  final List<EventualNotifier<String>> notifiers;
+  final EventualNotifier<String>? notifier;
+  final List<EventualNotifier<String>>? notifiers;
 
   const EventualBuilderTester({
-    Key key,
+    Key? key,
     this.notifier,
     this.notifiers,
   }) : super(key: key);
@@ -1168,32 +1168,32 @@ class EventualBuilderTester extends StatelessWidget {
     );
   }
 
-  buildDumpNotifier(List<EventualNotifier> notifierList, int idx) {
+  buildDumpNotifier(List<EventualNotifier?> notifierList, int idx) {
     if (notifierList.length < (idx + 1)) return Container();
 
     return Column(children: <Widget>[
-      Text("notifierList[$idx].value = ${notifierList[idx].value}"),
-      Text("notifierList[$idx].hasValue = ${notifierList[idx].hasValue}"),
-      Text("notifierList[$idx].isLoading = ${notifierList[idx].isLoading}"),
+      Text("notifierList[$idx].value = ${notifierList[idx]?.value}"),
+      Text("notifierList[$idx].hasValue = ${notifierList[idx]?.hasValue}"),
+      Text("notifierList[$idx].isLoading = ${notifierList[idx]?.isLoading}"),
       Text(
-          "notifierList[$idx].isLoadingFresh = ${notifierList[idx].isLoadingFresh}"),
+          "notifierList[$idx].isLoadingFresh = ${notifierList[idx]?.isLoadingFresh}"),
       Text(
-          "notifierList[$idx].loadingMessage = ${notifierList[idx].loadingMessage}"),
-      Text("notifierList[$idx].hasError = ${notifierList[idx].hasError}"),
+          "notifierList[$idx].loadingMessage = ${notifierList[idx]?.loadingMessage}"),
+      Text("notifierList[$idx].hasError = ${notifierList[idx]?.hasError}"),
       Text(
-          "notifierList[$idx].errorMessage = ${notifierList[idx].errorMessage}"),
-      Text("notifierList[$idx].lastUpdated = ${notifierList[idx].lastUpdated}"),
-      Text("notifierList[$idx].lastError = ${notifierList[idx].lastError}"),
-      Text("notifierList[$idx].isFresh = ${notifierList[idx].isFresh}"),
+          "notifierList[$idx].errorMessage = ${notifierList[idx]?.errorMessage}"),
+      Text("notifierList[$idx].lastUpdated = ${notifierList[idx]?.lastUpdated}"),
+      Text("notifierList[$idx].lastError = ${notifierList[idx]?.lastError}"),
+      Text("notifierList[$idx].isFresh = ${notifierList[idx]?.isFresh}"),
     ]);
   }
 }
 
 class EventualSingleBuilderTester extends StatelessWidget {
-  final EventualNotifier<String> notifier;
+  final EventualNotifier<String>? notifier;
 
   const EventualSingleBuilderTester({
-    Key key,
+    Key? key,
     this.notifier,
   }) : super(key: key);
 
@@ -1205,13 +1205,13 @@ class EventualSingleBuilderTester extends StatelessWidget {
         body: EventualSingleBuilder(
           notifier: notifier,
           loadingBuilder: (context, _, child) =>
-              Center(child: buildDumpNotifier(notifier, "loading")),
+              Center(child: buildDumpNotifier(notifier!, "loading")),
           errorBuilder: (context, _, child) =>
-              Center(child: buildDumpNotifier(notifier, "error")),
+              Center(child: buildDumpNotifier(notifier!, "error")),
           emptyBuilder: (context, _, child) =>
-              Center(child: buildDumpNotifier(notifier, "empty")),
+              Center(child: buildDumpNotifier(notifier!, "empty")),
           builder: (context, _, child) =>
-              Center(child: buildDumpNotifier(notifier, "value")),
+              Center(child: buildDumpNotifier(notifier!, "value")),
         ),
       ),
     );

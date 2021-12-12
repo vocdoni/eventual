@@ -7,7 +7,7 @@ import 'package:eventual/eventual-value.dart';
 class EventualNotifier<T> extends EventualValue<T> with ChangeNotifier {
   /// Initializes the state with no value by default. If an argument is passed,
   /// the argument is set as the initial value.
-  EventualNotifier([T initialValue]) : super(initialValue);
+  EventualNotifier([T? initialValue]) : super(initialValue);
 
   /// By default `isFresh` returns `false` 10 seconds after the value is set.
   /// Alter the recency threshold with a new value.
@@ -30,7 +30,7 @@ class EventualNotifier<T> extends EventualValue<T> with ChangeNotifier {
   /// Sets the loading flag to true, an optional loading message and clears the error status.
   /// Returns itself so further methods can be chained right after.
   @override
-  EventualNotifier<T> setToLoading([String loadingMessage]) {
+  EventualNotifier<T> setToLoading([String? loadingMessage]) {
     super.setToLoading(loadingMessage);
 
     // Notify after the state is changed
@@ -54,7 +54,7 @@ class EventualNotifier<T> extends EventualValue<T> with ChangeNotifier {
   /// tracks the update time and sets the loading flag to false.
   /// Returns `this` so further methods can be chained right after.
   @override
-  EventualNotifier<T> setValue(T newValue) {
+  EventualNotifier<T> setValue(T? newValue) {
     super.setValue(newValue);
 
     // Notify after the state is changed
