@@ -5,20 +5,20 @@ import 'package:eventual/eventual-notifier.dart';
 /// EventualBuilder provides a builder that rebuilds every time that any of `notifier` or
 /// `notifiers` is updated. Either of them must be provided. 
 class EventualBuilder extends StatefulWidget {
-  final List<EventualNotifier> notifiers = List<EventualNotifier>();
-  final Widget Function(BuildContext, List<EventualNotifier>, Widget) builder;
-  final Widget child;
+  final List<EventualNotifier?> notifiers = [];
+  final Widget Function(BuildContext, List<EventualNotifier?>, Widget?) builder;
+  final Widget? child;
 
   EventualBuilder(
-      {EventualNotifier notifier,
-      List<EventualNotifier> notifiers,
-      @required this.builder,
+      {EventualNotifier? notifier,
+      List<EventualNotifier>? notifiers,
+      required this.builder,
       this.child,
-      Key key})
+      Key? key})
       : assert(notifiers is List || notifier is EventualNotifier),
         super(key: key) {
     if (notifiers is List)
-      this.notifiers.addAll(notifiers);
+      this.notifiers.addAll(notifiers!);
     else
       this.notifiers.add(notifier);
   }
@@ -46,7 +46,7 @@ class _EventualSingleBuildertate extends State<EventualBuilder> {
     assert(widget.notifiers is List, "notifiers must be set");
 
     for (final item in widget.notifiers) {
-      item.addListener(_changeHandler);
+      item!.addListener(_changeHandler);
     }
   }
 
@@ -54,7 +54,7 @@ class _EventualSingleBuildertate extends State<EventualBuilder> {
     assert(widget.notifiers is List);
 
     for (final item in widget.notifiers) {
-      item.removeListener(_changeHandler);
+      item!.removeListener(_changeHandler);
     }
   }
 
@@ -64,7 +64,7 @@ class _EventualSingleBuildertate extends State<EventualBuilder> {
       assert(widget.notifiers is List);
 
       for (final item in oldWidget.notifiers) {
-        item.removeListener(_changeHandler);
+        item!.removeListener(_changeHandler);
       }
 
       addListeners();

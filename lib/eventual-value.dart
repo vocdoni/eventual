@@ -6,19 +6,19 @@
 ///
 class EventualValue<T> {
   // The very value being tracked
-  T _value;
+  T? _value;
   // The last time the value was set
-  DateTime _valueUpdated;
+  DateTime? _valueUpdated;
 
   // Date when the loading state was set. Null => not loading.
-  DateTime _loadingStartTimestamp;
+  DateTime? _loadingStartTimestamp;
   // Optional message
-  String _loadingMessage;
+  String? _loadingMessage;
 
   // Date when the error state was set. Null => no error.
-  DateTime _errorTimestamp;
+  DateTime? _errorTimestamp;
   // Error message
-  String _errorMessage;
+  String? _errorMessage;
 
   // Amount of milliseconds before `isFresh` starts returning false
   int _valueFreshnessTimeout = 10 * 1000;
@@ -27,7 +27,7 @@ class EventualValue<T> {
 
   /// Initializes the state with no value by default. If an argument is passed,
   /// the argument is set as the initial value.
-  EventualValue([T initialValue]) {
+  EventualValue([T? initialValue]) {
     if (initialValue is T) {
       _value = initialValue;
     }
@@ -59,21 +59,21 @@ class EventualValue<T> {
   bool get isLoading => _loadingStartTimestamp != null;
 
   /// Returns the optional loading message string
-  String get loadingMessage => _loadingMessage;
+  String? get loadingMessage => _loadingMessage;
 
   /// Returns `true` if `setToLoading()` was recently called (by default, 10 seconds).
   /// Returns `false` if `setToLoading()` was called more than X seconds ago or the value is simply not "loading".
   bool get isLoadingFresh {
     if (!isLoading) return false;
 
-    final stallThreshold = _loadingStartTimestamp.add(Duration(
+    final stallThreshold = _loadingStartTimestamp!.add(Duration(
         milliseconds:
             _loadingFreshnessTimeout)); // loading date + N milliseconds
     return DateTime.now().isBefore(stallThreshold);
   }
 
   /// Sets `loading = true` and sets the loading message
-  set loadingMessage(String message) {
+  set loadingMessage(String? message) {
     if (_loadingMessage != message || !this.isLoading)
       this.setToLoading(message);
   }
@@ -92,7 +92,7 @@ class EventualValue<T> {
 
   /// Sets the loading flag to true, an optional loading message and clears the error status.
   /// Returns itself so further methods can be chained right after.
-  EventualValue<T> setToLoading([String loadingMessage]) {
+  EventualValue<T> setToLoading([String? loadingMessage]) {
     _loadingStartTimestamp = DateTime.now();
     if (loadingMessage is String && loadingMessage.length > 0) {
       _loadingMessage = loadingMessage;
@@ -109,10 +109,10 @@ class EventualValue<T> {
   bool get hasError => _errorTimestamp != null;
 
   /// Returns the last error message defined
-  String get errorMessage => _errorMessage;
+  String? get errorMessage => _errorMessage;
 
   /// Returns the timestamp when the last error was set
-  DateTime get lastError => _errorTimestamp;
+  DateTime? get lastError => _errorTimestamp;
 
   /// Syntactic sugar for `setError(message)`
   set error(String message) {
@@ -141,24 +141,24 @@ class EventualValue<T> {
   // VALUE STATUS HANDLERS
 
   /// Provides the current value, if there is any
-  T get value => _value;
+  T? get value => _value;
 
   /// Returns true if a valid value is registered and no error has
   /// cleared it
   bool get hasValue => _value is T;
 
   /// Returns the last successful update
-  DateTime get lastUpdated => _valueUpdated;
+  DateTime? get lastUpdated => _valueUpdated;
 
   /// Sysntactic sugar for `setValue(newValue)`
-  set value(T newValue) {
+  set value(T? newValue) {
     this.setValue(newValue);
   }
 
   /// Sets the underlying value, clears the error status,
   /// tracks the update time and sets the loading flag to false.
   /// Returns `this` so further methods can be chained right after.
-  EventualValue<T> setValue(T newValue) {
+  EventualValue<T> setValue(T? newValue) {
     if (_value == newValue && !this.isLoading && !this.hasError) return this;
 
     _value = newValue;
@@ -188,7 +188,7 @@ class EventualValue<T> {
   bool get isFresh {
     if (!hasValue || _valueUpdated is! DateTime) return false;
 
-    final freshThreshold = _valueUpdated.add(Duration(
+    final freshThreshold = _valueUpdated!.add(Duration(
         milliseconds: _valueFreshnessTimeout)); // update date + N milliseconds
     return DateTime.now().isBefore(freshThreshold);
   }
